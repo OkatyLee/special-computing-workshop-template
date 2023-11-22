@@ -24,11 +24,19 @@ public class ChangeCombinations {
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
 
+    calculateCombinations(scanner);
+  }
+
+  /**
+   * Calculate combination.
+   */
+
+  public static Set<List<Integer>> calculateCombinations(Scanner scanner) {
     logger.info("Input value to change: ");
     try {
       int targetAmount = scanner.nextInt();
       if (targetAmount <= 0) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Value to change must be positive integer");
       }
       logger.info("Input denominations separated by space: ");
       scanner.nextLine();
@@ -36,28 +44,21 @@ public class ChangeCombinations {
       int[] denominations = Arrays.stream(denominationsInput.split(" "))
           .mapToInt(Integer::parseInt)
           .sorted()
+          .distinct()
           .toArray();
       if (denominations[0] <= 0) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(
+            "Denominations must be positive integers separated by space");
       }
-      calculateCombinations(targetAmount, denominations);
+      Set<List<Integer>>[] list = initializeList(targetAmount, denominations);
+      fillCombinationsList(list, targetAmount, denominations);
+      logResult(list, targetAmount, denominations);
+      return list[targetAmount];
     } catch (RuntimeException e) {
-      throw new IllegalArgumentException("Expected positive integers");
-    }
-  }
+      throw new IllegalArgumentException(e.getCause());
 
-  /**
-   * Calculate combination.
-   *
-   * @param targetAmount sum that we have to change
-   * @param denominations used to change sum
-   */
-  public static Set<List<Integer>> calculateCombinations(int targetAmount, int[] denominations) {
-    denominations = Arrays.stream(denominations).distinct().sorted().toArray();
-    Set<List<Integer>>[] list = initializeList(targetAmount, denominations);
-    fillCombinationsList(list, targetAmount, denominations);
-    logResult(list, targetAmount, denominations);
-    return list[targetAmount];
+    }
+
   }
 
   private static Set<List<Integer>>[] initializeList(int targetAmount, int[] denominations) {
