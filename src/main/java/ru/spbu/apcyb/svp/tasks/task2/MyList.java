@@ -26,9 +26,10 @@ public class MyList<T> implements List<T> {
    */
 
   public MyList(Object[] list) {
-    this.array = new Object[list.length * 2];
-    System.arraycopy(list, 0, this.array, 0, list.length);
     this.size = list.length;
+    this.array = increaseCapacity();
+    System.arraycopy(list, 0, this.array, 0, list.length);
+
   }
 
   @Override
@@ -57,12 +58,19 @@ public class MyList<T> implements List<T> {
   @Override
   public boolean add(Object element) {
     if (size == array.length) {
-      Object[] newArray = new Object[array.length * 2];
+      Object[] newArray = increaseCapacity();
       System.arraycopy(array, 0, newArray, 0, size);
       array = newArray;
     }
     array[size++] = element;
     return true;
+  }
+
+  private Object[] increaseCapacity() {
+    if (size >= Integer.MAX_VALUE / 2) {
+      return new Object[Integer.MAX_VALUE];
+    }
+    return new Object[size * 2];
   }
 
   @Override
@@ -72,7 +80,7 @@ public class MyList<T> implements List<T> {
     }
     Object[] newArray;
     if (array.length == size) {
-      newArray = new Object[array.length * 2];
+      newArray = increaseCapacity();
     } else {
       newArray = new Object[array.length];
     }
@@ -94,7 +102,7 @@ public class MyList<T> implements List<T> {
   @Override
   public T remove(int index) {
     if (index < 0 || index >= size) {
-      throw new IndexOutOfBoundsException("Index out of bounds");
+      throw new IndexOutOfBoundsException(IOOB);
     }
     Object removedElement = array[index];
     System.arraycopy(array, index + 1, array, index, size - index - 1);
@@ -112,7 +120,7 @@ public class MyList<T> implements List<T> {
 
   @Override
   public boolean addAll(int index, Collection c) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'addAll' is unsupported operation");
   }
 
   @Override
@@ -149,7 +157,7 @@ public class MyList<T> implements List<T> {
 
   @Override
   public boolean retainAll(Collection c) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'retainAll' is unsupported operation");
   }
 
   @Override
@@ -183,7 +191,7 @@ public class MyList<T> implements List<T> {
 
   @Override
   public Iterator<T> iterator() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'iterator' is unsupported operation");
   }
 
   @Override
@@ -193,22 +201,22 @@ public class MyList<T> implements List<T> {
 
   @Override
   public T[] toArray(Object[] a) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'toArray(Object[] a)' is unsupported operation");
   }
 
   @Override
   public ListIterator<T> listIterator() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'listIterator' is unsupported operation");
   }
 
   @Override
   public ListIterator<T> listIterator(int index) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'listIterator' is unsupported operation");
   }
 
   @Override
   public List<T> subList(int fromIndex, int toIndex) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("'subList' is unsupported operation");
   }
 
   @Override
