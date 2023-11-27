@@ -49,8 +49,8 @@ public class CalcWMultithreading {
 
   public static List<Double> computeTangentWithMultiThread(List<Double> list, int numThreads)
       throws ExecutionException, InterruptedException {
-
-    try (ExecutorService executorService = Executors.newFixedThreadPool(numThreads)) {
+    ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+    try {
       Future<List<Double>> futures = executorService.submit(
           () -> list.parallelStream().map(Math::tan).toList());
       return futures.get();
@@ -58,6 +58,8 @@ public class CalcWMultithreading {
       throw new ExecutionException("Exception during thread execution", e);
     } catch (InterruptedException e) {
       throw new InterruptedException(e.getMessage());
+    } finally {
+      executorService.shutdown();
     }
   }
 

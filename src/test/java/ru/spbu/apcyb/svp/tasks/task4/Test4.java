@@ -7,9 +7,9 @@ import static ru.spbu.apcyb.svp.tasks.task4.CalcWMultithreading.computeTangentWi
 import static ru.spbu.apcyb.svp.tasks.task4.CalcWMultithreading.readDoublesFromFile;
 import static ru.spbu.apcyb.svp.tasks.task4.CalcWMultithreading.writeDoublesToFile;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class MultiThreadTest {
+
   @Test
   void testGenerateNumbers() throws IOException {
     String filename = "src\\test\\resources\\generatorTest.txt";
@@ -31,21 +32,27 @@ class MultiThreadTest {
   }
 
   @ParameterizedTest
-  @CsvSource ({"1", "100", "1000000"})
-  void perfomanceTest(int num) throws IOException, ExecutionException, InterruptedException {
+  @CsvSource({"1", "100", "1000000"})
+  void performanceTest(int num) throws IOException, ExecutionException, InterruptedException {
     Logger logger = Logger.getLogger("Test");
     String filename = "src\\test\\resources\\test_%d.txt".formatted(num);
     Generator generator = new Generator();
     generator.generate(filename, num);
     List<Double> list = readDoublesFromFile(filename);
     Instant start = Instant.now();
-    computeTangentWithSingleThread(list);
+    List<Double> singleThread = computeTangentWithSingleThread(list);
     logger.info("Single thread compute %d values for %d milliseconds"
         .formatted(num, Duration.between(start, Instant.now()).toMillis()));
+    writeDoublesToFile(singleThread, "src\\test\\resources\\singleThread.txt");
     start = Instant.now();
-    computeTangentWithMultiThread(list, 4);
+    List<Double> multiThread = computeTangentWithMultiThread(list, 4);
     logger.info("Multi thread compute %d values for %d milliseconds"
         .formatted(num, Duration.between(start, Instant.now()).toMillis()));
+    writeDoublesToFile(multiThread, "src\\test\\resources\\multiThread.txt");
+    assertEquals(-1, Files.mismatch(
+        Path.of("src\\test\\resources\\singleThread.txt"),
+        Path.of("src\\test\\resources\\multiThread.txt")));
+
   }
 
   @Test
