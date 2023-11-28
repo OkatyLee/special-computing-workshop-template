@@ -1,0 +1,4 @@
+bar 2
+foo 2
+gas 1
+baz 1
